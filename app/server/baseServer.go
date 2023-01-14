@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/CRORCR/call/app/model/base"
+	"github.com/CRORCR/duoo-common/code"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,14 +13,15 @@ import (
 type controllerBase struct {
 }
 
-// response: {"error_code":10001,"error_message":"参数错误","succeed":false,"data":null}
-func (*controllerBase) ResponseError(ctx *gin.Context, errorCode int64) {
+// response: {"error_code":100101,"error_message":"Params error","succeed":false,"data":null}
+func (*controllerBase) ResponseError(ctx *gin.Context, err error) {
 	// 根据code查询对应msg
-	msg := ""
+	e := code.Cause(err)
+
 	result := base.Response{
 		Succeed:      false,
-		ErrorCode:    errorCode,
-		ErrorMessage: msg,
+		ErrorCode:    e.Code(),
+		ErrorMessage: e.Message(),
 	}
 	ctx.JSON(http.StatusOK, result)
 }
