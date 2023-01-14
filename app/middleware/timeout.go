@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -32,12 +33,13 @@ func Timeout(d time.Duration) gin.HandlerFunc {
 		// 执行业务逻辑后操作
 		select {
 		case p := <-panicChan:
-			//c.ISetStatus(500).IJson("time out")
-			log.Println(p)
+			c.JSON(http.StatusInternalServerError, "Server time out")
+			log.Printf("服务超时:%v\n", p)
 		case <-finish:
 			fmt.Println("finish")
 		case <-durationCtx.Done():
-			//c.ISetStatus(500).IJson("time out")
+			c.JSON(http.StatusInternalServerError, "Server time out")
+			log.Println("服务超时")
 		}
 	}
 }

@@ -3,15 +3,14 @@ module github.com/CRORCR/call
 go 1.17
 
 require (
+	github.com/CRORCR/duoo-common v0.0.0-20230114062846-ed46c8d20beb
 	github.com/gin-gonic/gin v1.8.2
 	github.com/jinzhu/configor v1.2.1
-	github.com/marmotedu/errors v1.0.2
 	github.com/sirupsen/logrus v1.9.0
 )
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/CRORCR/duoo-common v0.0.0-20230114062846-ed46c8d20beb // indirect
 	github.com/CRORCR/ecode v0.0.0-20230114055606-333ec5690c27 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 )

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/CRORCR/call/app/middleware"
-	"github.com/CRORCR/call/app/server"
+	"github.com/CRORCR/call/server"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

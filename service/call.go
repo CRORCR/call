@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/CRORCR/call/app/model"
+	"github.com/CRORCR/call/model"
 	"github.com/gin-gonic/gin"
 )
 

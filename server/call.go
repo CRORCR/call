@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/CRORCR/call/app/model"
-	"github.com/CRORCR/call/app/service"
+	"github.com/CRORCR/call/model"
+	"github.com/CRORCR/call/service"
 	"github.com/CRORCR/duoo-common/code"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
