@@ -1,11 +1,11 @@
-package server
+package api
 
 import (
 	"fmt"
 	"strconv"
 
-	"github.com/CRORCR/call/model"
-	"github.com/CRORCR/call/service"
+	"github.com/CRORCR/call/internal/model"
+	"github.com/CRORCR/call/internal/service"
 	"github.com/CRORCR/duoo-common/code"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -13,11 +13,14 @@ import (
 
 type UserController struct {
 	controllerBase
-	svc service.Service
+	svc *service.UserService
 }
 
-var UserServer = &UserController{
-	svc: service.Service{},
+var UserServer *UserController
+
+func NewUserController(svc *service.UserService) *UserController {
+	UserServer = &UserController{svc: svc}
+	return UserServer
 }
 
 // CallPrice get请求参数获取

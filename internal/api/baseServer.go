@@ -1,9 +1,9 @@
-package server
+package api
 
 import (
 	"net/http"
 
-	"github.com/CRORCR/call/model/base"
+	"github.com/CRORCR/call/internal/model/base"
 	"github.com/CRORCR/duoo-common/code"
 	"github.com/gin-gonic/gin"
 )

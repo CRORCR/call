@@ -9,11 +9,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/CRORCR/call/app/router"
+	"github.com/CRORCR/call/internal/api"
+	"github.com/CRORCR/call/internal/router"
+	"github.com/CRORCR/call/internal/service"
 )
 
 func main() {
 	// 加载配置
+
+	//初始化 repo
+	userService := service.NewUserService()
+	api.NewUserController(userService)
 
 	server := &http.Server{
 		Handler: router.InitRouter(),

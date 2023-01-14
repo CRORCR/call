@@ -3,15 +3,20 @@ package service
 import (
 	"fmt"
 
-	"github.com/CRORCR/call/model"
+	"github.com/CRORCR/call/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
-type Service struct {
+type UserService struct {
+	//svc service.Service
+}
+
+func NewUserService() *UserService {
+	return &UserService{}
 }
 
 // CallPrice 获取主播私聊价格
-func (s *Service) CallPrice(ctx *gin.Context, uid int64) *model.CallPriceResp {
+func (s *UserService) CallPrice(ctx *gin.Context, uid int64) *model.CallPriceResp {
 	resp := &model.CallPriceResp{
 		PriceCoins: make(map[int64]int64),
 	}
@@ -21,7 +26,7 @@ func (s *Service) CallPrice(ctx *gin.Context, uid int64) *model.CallPriceResp {
 }
 
 // CallPrice 获取主播私聊价格
-func (s *Service) CallPriceList(ctx *gin.Context, uids []int64) *model.CallPriceResp {
+func (s *UserService) CallPriceList(ctx *gin.Context, uids []int64) *model.CallPriceResp {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Println("居然有错误", err)
