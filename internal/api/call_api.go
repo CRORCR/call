@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/CRORCR/call/internal/contract"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/CRORCR/call/internal/service"
 	"github.com/CRORCR/duoo-common/code"
@@ -29,13 +28,13 @@ func NewUserController(svc *service.UserService) *UserController {
 func (u *UserController) CallPrice(ctx *gin.Context) {
 	uid, _ := strconv.ParseInt(ctx.Query("uid"), 10, 64)
 
-	logrus.Error("hello-err")
-	logrus.Errorf("hello-err %v", 1)
-	logrus.Info("hello")
-	logrus.Error("hello")
+	logrus.WithFields(logrus.Fields{
+		"level": "2",
+		"test":  "test",
+	}).Error("hello-err")
 
-	contract.L.Info("xinde")
-	contract.L.Error("xinde")
+	logrus.Info("hello")
+
 	u.ResponseError(ctx, code.RequestParamError)
 	return
 	if uid == 0 {
