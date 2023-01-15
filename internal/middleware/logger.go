@@ -23,6 +23,7 @@ func Logger() gin.HandlerFunc {
 	//设置日志级别
 	logger.SetLevel(logrus.TraceLevel)
 	logger.Out = src
+	//logrus.SetOutput(ioutil.Discard) //控制台不输出
 
 	// 设置 rotatelogs
 	logWriter, err := retalog.New(
@@ -41,6 +42,8 @@ func Logger() gin.HandlerFunc {
 
 	writeMap := lfshook.WriterMap{
 		logrus.TraceLevel: logWriter,
+		logrus.InfoLevel:  logWriter,
+		logrus.ErrorLevel: logWriter,
 	}
 
 	logger.AddHook(lfshook.NewHook(writeMap, &logrus.JSONFormatter{

@@ -31,6 +31,7 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 	logrus.Error("hello-err")
 	logrus.Errorf("hello-err %v", 1)
 	logrus.Info("hello")
+	logrus.Error("hello")
 	return
 	if uid == 0 {
 		fmt.Println("参数错误")
