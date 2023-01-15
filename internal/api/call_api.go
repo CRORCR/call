@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/CRORCR/call/internal/contract"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/CRORCR/call/internal/service"
 	"github.com/CRORCR/duoo-common/code"
@@ -32,6 +33,10 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 	logrus.Errorf("hello-err %v", 1)
 	logrus.Info("hello")
 	logrus.Error("hello")
+
+	contract.L.Info("xinde")
+	contract.L.Error("xinde")
+	u.ResponseError(ctx, code.RequestParamError)
 	return
 	if uid == 0 {
 		fmt.Println("参数错误")

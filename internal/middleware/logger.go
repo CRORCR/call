@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
 	"time"
@@ -14,7 +16,7 @@ import (
 
 func Logger() gin.HandlerFunc {
 	fileName := "./log/trace"
-	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		panic(fmt.Sprintf("Loading failure：%v", err))
 	}
@@ -63,6 +65,9 @@ func Logger() gin.HandlerFunc {
 		statusCode := c.Writer.Status()
 		clientIP := c.ClientIP()
 
+		bodyBytes, _ := ioutil.ReadAll(c.Request.Body)
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes)) // Write body back
+		response, _ := c.Get("response")
 		// 日志格式
 		logger.WithFields(logrus.Fields{
 			"status_code": statusCode,
@@ -70,6 +75,8 @@ func Logger() gin.HandlerFunc {
 			"client_ip":   clientIP,
 			"req_method":  reqMethod,
 			"req_uri":     reqUrl,
+			"request":     string(bodyBytes),
+			"response":    response,
 		}).Trace()
 	}
 }
