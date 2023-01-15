@@ -26,6 +26,15 @@ func NewUserController(svc *service.UserService) *UserController {
 
 // CallPrice get请求参数获取
 func (u *UserController) CallPrice(ctx *gin.Context) {
+	defer func() {
+		if err := recover(); err != nil {
+			logrus.WithFields(logrus.Fields{
+				"service": "UserController.CallPrice",
+				"error":   "panic",
+			}).Error(err)
+		}
+	}()
+
 	uid, _ := strconv.ParseInt(ctx.Query("uid"), 10, 64)
 
 	logrus.WithFields(logrus.Fields{
@@ -33,6 +42,7 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 		"test":  "test",
 	}).Error("hello-err")
 
+	panic("------")
 	logrus.Info("hello")
 
 	u.ResponseError(ctx, code.RequestParamError)

@@ -41,7 +41,7 @@ func Logger() gin.HandlerFunc {
 	//logrus.SetOutput(ioutil.Discard) //控制台不输出
 
 	logrus.SetLevel(logrus.TraceLevel)
-	//logrus.SetReportCaller(true) // 行号是否输出
+	logrus.SetReportCaller(true) // 行号是否输出
 
 	return func(c *gin.Context) {
 		startTime := time.Now()

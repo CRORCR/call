@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func Timeout(d time.Duration) gin.HandlerFunc {
@@ -34,7 +35,8 @@ func Timeout(d time.Duration) gin.HandlerFunc {
 		select {
 		case p := <-panicChan:
 			c.JSON(http.StatusInternalServerError, "Server time out")
-			log.Printf("服务超时:%v\n", p)
+			// 服务异常走到这里，无法打印行号，所以各个业务自己处理自己的panic
+			logrus.Errorf("服务panic:%v", p)
 		case <-finish:
 			fmt.Println("finish")
 		case <-durationCtx.Done():
