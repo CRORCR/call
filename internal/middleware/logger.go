@@ -15,7 +15,7 @@ import (
 )
 
 func Logger() gin.HandlerFunc {
-	fileName := "./log/trace"
+	fileName := "./logs/trace.log"
 	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		panic(fmt.Sprintf("Loading failure：%v", err))
@@ -44,8 +44,6 @@ func Logger() gin.HandlerFunc {
 
 	writeMap := lfshook.WriterMap{
 		logrus.TraceLevel: logWriter,
-		logrus.InfoLevel:  logWriter,
-		logrus.ErrorLevel: logWriter,
 	}
 
 	logger.AddHook(lfshook.NewHook(writeMap, &logrus.JSONFormatter{
