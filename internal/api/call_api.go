@@ -9,6 +9,7 @@ import (
 	"github.com/CRORCR/duoo-common/code"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/sirupsen/logrus"
 )
 
 type UserController struct {
@@ -27,6 +28,10 @@ func NewUserController(svc *service.UserService) *UserController {
 func (u *UserController) CallPrice(ctx *gin.Context) {
 	uid, _ := strconv.ParseInt(ctx.Query("uid"), 10, 64)
 
+	logrus.Error("hello-err")
+	logrus.Errorf("hello-err %v", 1)
+	logrus.Info("hello")
+	return
 	if uid == 0 {
 		fmt.Println("参数错误")
 		u.ResponseError(ctx, code.RequestParamError)
