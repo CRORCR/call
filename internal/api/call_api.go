@@ -42,9 +42,6 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 		"test":  "test",
 	}).Error("hello-err")
 
-	panic("------")
-	logrus.Info("hello")
-
 	u.ResponseError(ctx, code.RequestParamError)
 	return
 	if uid == 0 {

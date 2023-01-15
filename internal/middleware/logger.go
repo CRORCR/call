@@ -36,6 +36,7 @@ func Logger() gin.HandlerFunc {
 	// todo
 	// 如果env是本地，控制台输出日志
 	// 如果env是prod，只能输出info级别日志
+	// 出现错误，比如panic的时候，需要打印堆栈信息
 
 	//logrus.SetOutput(os.Stderr) // 控制台输出
 	//logrus.SetOutput(ioutil.Discard) //控制台不输出
