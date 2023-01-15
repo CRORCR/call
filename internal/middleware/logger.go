@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"time"
 
@@ -11,71 +12,61 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// 第一版本
 func Logger() gin.HandlerFunc {
-	filepath := "./logs/log.log"
-	src, err := os.OpenFile(filepath, os.O_RDONLY|os.O_CREATE|os.O_APPEND, 0755)
-
+	fileName := "./log/trace"
+	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
-		fmt.Println("err:", err)
+		panic(fmt.Sprintf("Loading failure：%v", err))
 	}
 
 	logger := logrus.New()
+	//设置日志级别
+	logger.SetLevel(logrus.TraceLevel)
 	logger.Out = src
-	logger.SetLevel(logrus.DebugLevel)
 
-	logInfoWriter, _ := retalog.New(
-		"./logs/info-%Y%m%d%H.log",
+	// 设置 rotatelogs
+	logWriter, err := retalog.New(
+		// 分割后的文件名称
+		fileName+"-%Y%m%d%H.log",
+
+		// 生成软链，指向最新日志文件
+		retalog.WithLinkName(fileName),
+
+		// 设置最大保存时间(7天)
 		retalog.WithMaxAge(7*24*time.Hour),
+
+		// 设置日志切割时间间隔(1h)
 		retalog.WithRotationTime(time.Hour),
 	)
 
 	writeMap := lfshook.WriterMap{
-		logrus.InfoLevel:  logInfoWriter,
-		logrus.DebugLevel: logInfoWriter,
-		logrus.WarnLevel:  logInfoWriter,
-		logrus.ErrorLevel: logInfoWriter,
-		logrus.PanicLevel: logInfoWriter,
+		logrus.TraceLevel: logWriter,
 	}
-	Hook := lfshook.NewHook(writeMap, &logrus.TextFormatter{
+
+	logger.AddHook(lfshook.NewHook(writeMap, &logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
-	})
-	logger.AddHook(Hook)
+	}))
 
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		startTime := time.Now()
-		ctx.Next()
-		stopTime := time.Since(startTime).Microseconds()
-		spendTime := fmt.Sprintf("%d ms", stopTime)
-		clientIp := ctx.ClientIP()
-		//userAgent := ctx.Request.UserAgent()
 
-		method := ctx.Request.Method
-		path := ctx.Request.RequestURI
-		hostName, err := os.Hostname()
-		statusCode := ctx.Writer.Status()
-		if err != nil {
-			hostName = "unknown"
-		}
-		entry := logger.WithFields(logrus.Fields{
-			"host_name": hostName,
-			"status":    statusCode,
-			"cost":      spendTime,
-			"ip":        clientIp,
-			"method":    method,
-			"path":      path,
-			//"Agent":     userAgent,
-		})
+		c.Next()
 
-		if len(ctx.Errors) > 0 {
-			entry.Error(ctx.Errors.ByType(gin.ErrorTypePrivate).String())
-		}
-		if statusCode >= 500 {
-			entry.Error()
-		} else if statusCode >= 400 {
-			entry.Info()
-		} else {
-			entry.Info()
-		}
+		stopTime := time.Since(startTime)
+		cost := fmt.Sprintf("%d ms", int(math.Ceil(float64(stopTime.Nanoseconds()/1000000))))
+
+		reqMethod := c.Request.Method
+		reqUrl := c.Request.RequestURI
+		statusCode := c.Writer.Status()
+		clientIP := c.ClientIP()
+
+		// 日志格式
+		logger.WithFields(logrus.Fields{
+			"status_code": statusCode,
+			"cost":        cost,
+			"client_ip":   clientIP,
+			"req_method":  reqMethod,
+			"req_uri":     reqUrl,
+		}).Trace()
 	}
 }
