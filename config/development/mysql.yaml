@@ -1,0 +1,45 @@
+# MySQL 数据库相关配置
+mysql:
+  default_master:
+    driver: "mysql" # 连接驱动
+    dsn: "" # dsn，如果设置了dsn, 以下的所有设置都不生效
+    host: "tx6-inno-chaturbate-db-test01.bj" # ip地址
+    port: 3306 # 端口
+    username: "inke_db_testuser" # 用户名
+    password: "inekoedb0testgv3" # 密码
+    charset: "utf8mb4" # 字符集
+    collation: "utf8mb4_unicode_ci" # 字符序
+    timeout: 10 # 连接超时 单位s
+    read_timeout: 2 # 读超时 单位s
+    write_timeout: 2 # 写超时 单位s
+    parse_time: true # 是否解析时间
+    protocol: "tcp" # 传输协议
+    loc: "Local" # 时区
+
+  default_slave:
+    driver: "mysql" # 连接驱动
+    dsn: "" # dsn，如果设置了dsn, 以下的所有设置都不生效
+    host: "tx6-inno-chaturbate-db-test01.bj" # ip地址
+    port: 3306 # 端口
+    username: "inke_db_testuser" # 用户名
+    password: "inekoedb0testgv3" # 密码
+    charset: "utf8mb4" # 字符集
+    collation: "utf8mb4_unicode_ci" # 字符序
+    timeout: 10 # 连接超时
+    read_timeout: 2 # 读超时 单位s
+    write_timeout: 2 # 写超时 单位s
+    parse_time: true # 是否解析时间
+    protocol: tcp # 传输协议
+    loc: "Local" # 时区
+
+  call_db:
+    master:
+      database: "call_db" # 数据库名
+      max_idle_connections: 100 # MySQL 最大空闲连接数，默认 100
+      max_open_connections: 100 # MySQL 最大打开的连接数，默认 100
+      max_connection_life_time: 10 # 空闲连接最大存活时间，默认 10s
+    slave:
+      database: "call_db" # 数据库名
+      max_idle_connections: 100 # MySQL 最大空闲连接数，默认 100
+      max_open_connections: 100 # MySQL 最大打开的连接数，默认 100
+      max_connection_life_time: 10 # 空闲连接最大存活时间，默认 10s
