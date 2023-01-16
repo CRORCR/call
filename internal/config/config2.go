@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -10,82 +11,55 @@ import (
 )
 
 type ConfigClass struct {
-	Conf *ConfigV2
+	Conf *Config
 }
 
 var (
 	GlobalConfig = ConfigClass{}
 )
 
-func InitConfigV2() {
-	GlobalConfig.LoadConfig(nil, nil)
+func InitConfig() {
+	config := flag.String("config", "", "Configuration file")
+	flag.Parse()
+	if config == nil {
+		panic("Please enter Configuration file")
+	}
+	switch *config {
+	case EnvProduction, EnvTesting, EnvDevelopment:
+	default:
+		panic("Please enter Configuration file")
+	}
+	fmt.Println("--------------")
+	fmt.Println("./config/" + *config)
+	fmt.Println("./config/")
+	//GlobalConfig.LoadConfig("./config/"+*config+"/", "")
+	GlobalConfig.LoadConfig("./config/", "")
+	//GlobalConfig.LoadConfig("./config/testing/", "")
 	v, _ := json.Marshal(GlobalConfig)
 	fmt.Println("读取---", string(v))
 }
 
-type ConfigDB struct {
-	User ConfigMysql `yaml:"user"`
-}
+/*
 
-type ConfigMysql struct {
-	Host          string `yaml:"host"`
-	Username      string `yaml:"username"`
-	Password      string `yaml:"password"`
-	Database      string `yaml:"database"`
-	Port          uint32 `yaml:"port"`
-	IsAutoMigrate bool   `yaml:"is_auto_migrate"`
-	LogMode       bool   `yaml:"log_mode"`
-	MaxIdleConns  int    `yaml:"max_idle_conns"`
-	MaxOpenConns  int    `yaml:"max_open_conns"`
-}
+加入的文件---- ./config/testing/config.yaml
+加入的文件---- ./secret/mysql.yaml
+*/
 
-type ConfigRedis struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-	DB   int    `yaml:"db"`
-}
-
-type ConfigApp struct {
-	ENV  string `yaml:"env"`
-	Port string `yaml:"port"`
-}
-type UrlParams struct {
-	Idcade     string `yaml:"idcade"`
-	Verify     string `yaml:"verify"`
-	Type       string `yaml:"type"`
-	ApiKey     string `yaml:"apiKey"`
-	SecretKey  string `yaml:"secretKey"`
-	ImageUrl   string `yaml:"imageUrl"`
-	GatewayUrl string `yaml:"gatewayUrl"`
-}
-
-type ConfigParams struct {
-	PreDeliveryHours float64 `yaml:"pre_delivery_hours"`
-}
-
-type ConfigV2 struct {
-	DB        ConfigDB    `yaml:"mysql"`
-	JwtPubKey string      `yaml:"jwtPubKey"`
-	App       ConfigApp   `yaml:"app"`
-	Redis     ConfigRedis `yaml:"redis"`
-	Urls      UrlParams   `yaml:"urls"`
-}
-
-func (c *ConfigClass) LoadConfig(configFilePtr *string, secretFilePtr *string) {
+func (c *ConfigClass) LoadConfig(configFilePtr string, secretFilePtr string) {
 	configPath := ``
 	secretPath := ``
-	if configFilePtr == nil {
+	if len(configFilePtr) == 0 {
 		configPath = "./config/"
 	} else {
-		configPath = *configFilePtr
+		configPath = configFilePtr
 	}
-	if secretFilePtr == nil {
+	if len(secretFilePtr) == 0 {
 		secretPath = "./secret/"
 	} else {
-		secretPath = *secretFilePtr
+		secretPath = secretFilePtr
 	}
 	configfiles := GetConfigFiles(configPath, secretPath)
-	c.Conf = new(ConfigV2)
+	c.Conf = new(Config)
 
 	// 从配置文件中加载
 	err := configor.Load(c.Conf, configfiles...)
@@ -111,6 +85,7 @@ func walkDir(configfiles []string, dirname string) []string {
 		for _, f := range files {
 			if strings.Contains(f.Name(), ".yaml") {
 				configfiles = append(configfiles, dirname+f.Name())
+				fmt.Println("加入的文件----", dirname+f.Name())
 			}
 		}
 	}
