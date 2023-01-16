@@ -10,12 +10,14 @@ import (
 	"time"
 
 	"github.com/CRORCR/call/internal/api"
+	"github.com/CRORCR/call/internal/config"
 	"github.com/CRORCR/call/internal/router"
 	"github.com/CRORCR/call/internal/service"
 )
 
 func main() {
 	// 加载配置
+	config.InitConfig()
 
 	//初始化 repo
 	userService := service.NewUserService()

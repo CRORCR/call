@@ -1,0 +1,11 @@
+redis: # redis配置
+    server_name: "redis_service" #
+    addr: "tx6-inno-frenzy-db-test01.bj:6379"
+    password: "redisinkePassWd"
+    max_active: 500
+    idle_timeout: 1000
+    connect_timeout: 1000
+    read_timeout: 1000
+    write_timeout: 1000
+    database: 0
+    retry: 2
