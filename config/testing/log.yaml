@@ -1,4 +1,3 @@
 log:
   level: "trace" # 日志输出级别
-  max_age: "10d" # 文件保存时间
-  date_format: "%Y%m%d%H" # 文件后缀格式
+  max_day: 10 # 文件保存时间

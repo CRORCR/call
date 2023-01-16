@@ -11,47 +11,43 @@ import (
 	"github.com/jinzhu/configor"
 )
 
+// 配置文件根据模块不同，拆分多个文件存储，对不同性质的配置，根据环境不同读取不同配置，通过运行参数决定。
+// 对于私密的配置，放到secret目录，普通配置放到config目录。
+
 type Configuration struct {
 	Conf *model.Config
 }
 
-var (
-	GlobalConfig = Configuration{}
-)
-
-func InitConfig() {
-	config := flag.String("config", "", "Configuration file")
+func InitConfig() *Configuration {
+	config := &Configuration{}
+	envPackage := flag.String("config", "", "Configuration file")
 	flag.Parse()
-	if config == nil {
+	if envPackage == nil {
 		panic("Please enter Configuration file")
 	}
-	switch *config {
+
+	switch *envPackage {
 	case EnvProduction, EnvTesting, EnvDevelopment:
 	default:
 		panic("Please enter Configuration file")
 	}
-	fmt.Println("--------------")
-	fmt.Println("./config/" + *config)
-	fmt.Println("./config/")
-	//GlobalConfig.LoadConfig("./config/"+*config+"/", "")
-	//GlobalConfig.LoadConfig("./config/", "")
-	GlobalConfig.LoadConfig("./config/testing/", "")
-	v, _ := json.Marshal(GlobalConfig)
-	fmt.Println("读取---", string(v))
+
+	config.LoadConfig(envPackage, nil)
+
+	v, _ := json.Marshal(config)
+	fmt.Println("读取配置:", string(v))
+	return config
 }
 
-func (c *Configuration) LoadConfig(configFilePtr string, secretFilePtr string) {
-	configPath := ``
-	secretPath := ``
-	if len(configFilePtr) == 0 {
-		configPath = "./config/"
-	} else {
-		configPath = configFilePtr
+// LoadConfig 配置必须要放到config和secret目录
+func (c *Configuration) LoadConfig(configFilePtr *string, secretFilePtr *string) {
+	configPath := "./config/"
+	secretPath := "./secret/"
+	if configFilePtr != nil { // 好像有一个拼接路径的包，替换掉 todo
+		configPath = fmt.Sprintf("%s/%s/", configPath, *configFilePtr)
 	}
-	if len(secretFilePtr) == 0 {
-		secretPath = "./secret/"
-	} else {
-		secretPath = secretFilePtr
+	if secretFilePtr != nil {
+		secretPath = *secretFilePtr
 	}
 	configfiles := GetConfigFiles(configPath, secretPath)
 	c.Conf = new(model.Config)
@@ -80,7 +76,6 @@ func walkDir(configfiles []string, dirname string) []string {
 		for _, f := range files {
 			if strings.Contains(f.Name(), ".yaml") {
 				configfiles = append(configfiles, dirname+f.Name())
-				fmt.Println("加入的文件----", dirname+f.Name())
 			}
 		}
 	}

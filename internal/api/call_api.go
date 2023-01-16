@@ -40,7 +40,12 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 	logrus.WithFields(logrus.Fields{
 		"level": "2",
 		"test":  "test",
-	}).Error("hello-err")
+	}).Error("hello-error")
+
+	logrus.WithFields(logrus.Fields{
+		"level": "2",
+		"test":  "test",
+	}).Trace("hello-trace")
 
 	u.ResponseError(ctx, code.RequestParamError)
 	return

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,22 +12,27 @@ import (
 
 	"github.com/CRORCR/call/internal/api"
 	"github.com/CRORCR/call/internal/config"
+	"github.com/CRORCR/call/internal/middleware"
 	"github.com/CRORCR/call/internal/router"
 	"github.com/CRORCR/call/internal/service"
 )
 
 func main() {
 	// 加载配置
-	config.InitConfig()
-
+	config := config.InitConfig()
+	middleware.NewLogger(config.Conf.Log)
 	//初始化 repo
-	userService := service.NewUserService()
+
+	// 初始化service
+	userService := service.NewUserService(config)
 	api.NewUserController(userService)
 
 	server := &http.Server{
 		Handler: router.InitRouter(),
-		Addr:    ":8888",
+		Addr:    config.Conf.App.Port,
 	}
+
+	fmt.Printf("\nstart http server [%s] on [%s] \n", config.Conf.App.ServiceName, server.Addr)
 
 	// 这个goroutine是启动服务的goroutine
 	go func() {
@@ -50,5 +56,5 @@ func main() {
 		log.Fatal("Server Shutdown:", err)
 	}
 
-	log.Println("Server exiting")
+	log.Printf("Server %s exiting \n", config.Conf.App.ServiceName)
 }

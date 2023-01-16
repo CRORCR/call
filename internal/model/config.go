@@ -14,15 +14,17 @@ type App struct {
 
 // AppConfig app.yaml
 type AppConfig struct {
-	Env  string `yaml:"env"`
-	Port string `yaml:"port"`
+	Env         string `yaml:"env"`
+	Port        string `yaml:"port"`
+	AppName     string `yaml:"app_name"`
+	ServiceName string `yaml:"service_name"`
 }
 
 // LogConfig log.yaml
 type LogConfig struct {
-	level      string `yaml:"level"`
-	MaxAge     string `yaml:"max_age"`
-	DateFormat string `yaml:"date_format"`
+	Level  string `yaml:"level"`
+	MaxDay int64  `yaml:"max_day"`
+	//Suffix string `yaml:"suffix"` 暂时不用
 }
 
 // RedisConfig redis.yaml

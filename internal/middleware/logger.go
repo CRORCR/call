@@ -8,26 +8,18 @@ import (
 	"os"
 	"time"
 
+	"github.com/CRORCR/call/internal/model"
 	"github.com/gin-gonic/gin"
 	retalog "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 )
 
-func Logger() gin.HandlerFunc {
-	// 本地测试
-	//path := "./logs/%Y%m%d%H%M.log"
-	//writer, _ := retalog.New(
-	//	path,
-	//	//retalog.WithLinkName(path),
-	//	retalog.WithMaxAge(time.Duration(180)*time.Second),
-	//	retalog.WithRotationTime(time.Duration(60)*time.Second),
-	//)
-
+func NewLogger(logConfig model.LogConfig) {
 	path := "./logs/%Y%m%d%H.log"
 	writer, _ := retalog.New(
 		path,
-		retalog.WithMaxAge(time.Hour*24*7),
+		retalog.WithMaxAge(time.Hour*24*time.Duration(logConfig.MaxDay)),
 		retalog.WithRotationTime(time.Hour),
 	)
 
@@ -41,8 +33,27 @@ func Logger() gin.HandlerFunc {
 	//logrus.SetOutput(os.Stderr) // 控制台输出
 	//logrus.SetOutput(ioutil.Discard) //控制台不输出
 
-	logrus.SetLevel(logrus.TraceLevel)
+	switch logConfig.Level {
+	case "trace":
+		logrus.SetLevel(logrus.TraceLevel)
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+
 	logrus.SetReportCaller(true) // 行号是否输出
+}
+
+func Logger() gin.HandlerFunc {
+	// 本地测试
+	//path := "./logs/%Y%m%d%H%M.log"
+	//writer, _ := retalog.New(
+	//	path,
+	//	//retalog.WithLinkName(path),
+	//	retalog.WithMaxAge(time.Duration(180)*time.Second),
+	//	retalog.WithRotationTime(time.Duration(60)*time.Second),
+	//)
 
 	return func(c *gin.Context) {
 		startTime := time.Now()

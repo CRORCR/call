@@ -3,16 +3,18 @@ package service
 import (
 	"fmt"
 
+	"github.com/CRORCR/call/internal/config"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
 type UserService struct {
+	conf *config.Configuration
 	//svc service.Service
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(conf *config.Configuration) *UserService {
+	return &UserService{conf: conf}
 }
 
 // CallPrice 获取主播私聊价格

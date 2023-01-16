@@ -1,3 +1,5 @@
 app:
+    app_name: "duoo"
+    service_name: "duoo.call.service"
     env: "development"
-    port: "8000"
+    port: ":8000"
