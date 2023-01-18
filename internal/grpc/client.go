@@ -137,22 +137,22 @@ func newGrpcConn(target string) (*grpc.ClientConn, error) {
 */
 
 type RpcService struct {
-	userClient      unsafe.Pointer
-	lck             sync.Mutex
-	userConnAddress string
-	hisConnAddress  string
-	conf            *config.Configuration
+	userClient     unsafe.Pointer
+	lck            sync.Mutex
+	userServerPort string
+	hisConnAddress string
+	conf           *config.Configuration
 }
 
 func InitRpcClient(conf *config.Configuration) *RpcService {
 	r := &RpcService{
-		userConnAddress: conf.Conf.Rpc.UserApi,
+		userServerPort: conf.Conf.Rpc.UserServer,
 	}
 	return r
 }
 
 func (r *RpcService) GetUserClient() (callPrice.HisDemoListClient, error) {
-	conn, err := r.getUserConn(r.userConnAddress)
+	conn, err := r.getUserConn(r.userServerPort)
 	if err != nil {
 		return (callPrice.HisDemoListClient)(nil), err
 	}
