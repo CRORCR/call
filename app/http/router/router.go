@@ -3,8 +3,8 @@ package router
 import (
 	"time"
 
-	"github.com/CRORCR/call/internal/api"
-	"github.com/CRORCR/call/internal/middleware"
+	"github.com/CRORCR/call/app/http/api"
+	middleware2 "github.com/CRORCR/call/app/http/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -32,10 +32,10 @@ func initRouter() *gin.Engine {
 	//}))
 
 	//加载自定义中间件
-	router.Use(middleware.Logger())
+	router.Use(middleware2.Logger())
 	router.Use(gin.Recovery())
 	//router.Use(middleware.Cost())
-	router.Use(middleware.Timeout(3 * time.Second))
+	router.Use(middleware2.Timeout(3 * time.Second))
 
 	return router
 }

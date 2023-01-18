@@ -10,10 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/CRORCR/call/internal/api"
+	"github.com/CRORCR/call/app/http/api"
+	"github.com/CRORCR/call/app/http/middleware"
+	"github.com/CRORCR/call/app/http/router"
 	"github.com/CRORCR/call/internal/config"
-	"github.com/CRORCR/call/internal/middleware"
-	"github.com/CRORCR/call/internal/router"
+	"github.com/CRORCR/call/internal/grpc"
 	"github.com/CRORCR/call/internal/service"
 )
 
@@ -21,14 +22,17 @@ func main() {
 	// 加载配置
 	config := config.InitConfig()
 	middleware.NewLogger(config.Conf.Log)
+
+	// 初始化rpc
+	rpcService := grpc.InitRpcClient(config)
 	//初始化 repo
 
 	// 初始化service
-	userService := service.NewUserService(config)
+	userService := service.NewUserService(config, rpcService)
 	api.NewUserController(userService)
-
+	appHandler := router.InitRouter()
 	server := &http.Server{
-		Handler: router.InitRouter(),
+		Handler: appHandler,
 		Addr:    config.Conf.App.Port,
 	}
 

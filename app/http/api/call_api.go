@@ -40,15 +40,8 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 	logrus.WithFields(logrus.Fields{
 		"level": "2",
 		"test":  "test",
-	}).Error("hello-error")
+	}).Info("hello-trace")
 
-	logrus.WithFields(logrus.Fields{
-		"level": "2",
-		"test":  "test",
-	}).Trace("hello-trace")
-
-	u.ResponseError(ctx, code.RequestParamError)
-	return
 	if uid == 0 {
 		fmt.Println("参数错误")
 		u.ResponseError(ctx, code.RequestParamError)

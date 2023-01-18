@@ -3,6 +3,7 @@ package model
 type Config struct {
 	App   AppConfig   `yaml:"app"`   // app相关配置
 	Log   LogConfig   `yaml:"log"`   // log日志配置
+	Rpc   RpcConfig   `yaml:"rpc"`   // rpc配置
 	Redis RedisConfig `yaml:"redis"` // 缓存配置
 	Mysql MysqlConfig `yaml:"mysql"` // mysql配置 测试先用着，链路调通之后，换成pgsql
 }
@@ -25,6 +26,12 @@ type LogConfig struct {
 	Level  string `yaml:"level"`
 	MaxDay int64  `yaml:"max_day"`
 	//Suffix string `yaml:"suffix"` 暂时不用
+}
+
+// RpcConfig rpc.yaml
+type RpcConfig struct {
+	Url     string `yaml:"url"`
+	UserApi string `yaml:"user_api"`
 }
 
 // RedisConfig redis.yaml
