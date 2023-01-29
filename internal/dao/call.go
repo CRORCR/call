@@ -61,3 +61,24 @@ type DialCall struct {
 	//`create_time` bigint(20) unsigned NOT NULL COMMENT '创建时间',
 	//`update_time` bigint(20) unsigned NOT NULL COMMENT '最后更新时间',
 }
+
+/*
+测试批量发送，一次执行
+	pipeline := c.redis.Client.Pipeline()
+	pipeline.Set("hello", 1, time.Minute)
+	pipeline.Set("hello2", 2, time.Minute)
+	pipeline.Set("hello3", 3, time.Second*30)
+	cmders, err := pipeline.Exec()
+	if err != nil {
+		fmt.Println("错误了")
+		return nil, nil
+	}
+	data := make([]string, 0, len(cmders))
+	for _, cmder := range cmders {
+		v := cmder.(*redis.StatusCmd).Val()
+		data = append(data, v)
+	}
+
+	fmt.Println("-------jieguo", data) //  [OK OK OK]
+	return nil, nil
+*/
