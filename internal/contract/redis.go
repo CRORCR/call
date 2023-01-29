@@ -26,20 +26,6 @@ func InitRedisClient(conf *config.Configuration) *Redis {
 	}
 }
 
-/*
-   host: "10.4.23.171"
-   port: 6379
-   password: "Duoo1234"
-   max_active: 500
-
-   idle_timeout: 1000
-   connect_timeout: 1000
-   read_timeout: 1000
-   write_timeout: 1000
-   db: 1
-   retry: 2
-*/
-
 func CreateRedisConnection(conf model.RedisConfig) *redis.Client {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),

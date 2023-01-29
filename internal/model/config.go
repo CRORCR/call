@@ -5,7 +5,8 @@ type Config struct {
 	Log   LogConfig   `yaml:"log"`   // log日志配置
 	Rpc   RpcConfig   `yaml:"rpc"`   // rpc配置
 	Redis RedisConfig `yaml:"redis"` // 缓存配置
-	Mysql MysqlConfig `yaml:"mysql"` // mysql配置 测试先用着，链路调通之后，换成pgsql
+	//Mysql MysqlConfig `yaml:"mysql"` // mysql配置 测试先用着，链路调通之后，换成pgsql
+	Postgres PostgresConfig `yaml:"postgres"`
 }
 
 type App struct {
@@ -47,8 +48,8 @@ type RedisConfig struct {
 	Retry          int64  `yaml:"retry"`
 }
 
-// MysqlConfig mysql.yaml 拆分出默认的配置
-type MysqlConfig struct {
+// PostgresConfig postgres.yaml 拆分出默认的配置
+type PostgresConfig struct {
 	DefaultMaster DefaultDbConfig `yaml:"default_master"`
 	DefaultSlave  DefaultDbConfig `yaml:"default_slave"`
 	CallDb        DbConfig        `yaml:"call_db"`
@@ -56,19 +57,15 @@ type MysqlConfig struct {
 
 type DefaultDbConfig struct {
 	Driver       string `yaml:"driver"`        // 连接驱动
-	Dsn          string `yaml:"dsn"`           // dsn，如果设置了dsn, 以下的所有设置都不生效
 	Host         string `yaml:"host"`          // ip地址
 	Port         int64  `yaml:"port"`          // 端口
 	Username     string `yaml:"username"`      // 用户名
 	Password     string `yaml:"password"`      // 密码
-	Charset      string `yaml:"charset"`       // 字符集
-	Collation    string `yaml:"collation"`     // 字符序
 	Timeout      int64  `yaml:"timeout"`       // 连接超时
+	MaxIdle      int64  `yaml:"max_idle"`      // 空闲的最大连接数
+	MaxOpen      int64  `yaml:"max_open"`      // 数据库打开的最大连接数
 	ReadTimeout  int64  `yaml:"read_timeout"`  // 读超时 单位s
 	WriteTimeout int64  `yaml:"write_timeout"` // 写超时 单位s
-	ParseTime    bool   `yaml:"parse_time"`    // 是否解析时间
-	Protocol     string `yaml:"protocol"`      // 传输协议
-	Loc          string `yaml:"loc"`           // 时区
 }
 
 // DbConfig mysql分主从两份配置，一期先用单库

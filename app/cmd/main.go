@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/CRORCR/call/dao"
 	"github.com/CRORCR/call/internal/contract"
 	"log"
 	"net/http"
@@ -28,13 +29,22 @@ func main() {
 	rpcService := grpc.InitRpcClient(config)
 
 	// 初始化redis
-	client := contract.InitRedisClient(config)
-	defer client.RedisClose()
+	redis := contract.InitRedisClient(config)
+	defer redis.RedisClose()
+
+	// 初始化pgsql v1
+	//contract.InitDb(config)
+	//defer contract.DbClose()
+
+	// 初始化pgsql v2
+	db := contract.InitPostgres(config)
+	defer contract.CloseDB(db)
 
 	//初始化 repo
+	repo := dao.CreateUserRepo(db, redis)
 
 	// 初始化service
-	userService := service.NewUserService(config, rpcService, client)
+	userService := service.NewUserService(config, rpcService, repo)
 	api.NewUserController(userService)
 	appHandler := router.InitRouter()
 	server := &http.Server{
