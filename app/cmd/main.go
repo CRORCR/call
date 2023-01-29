@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/CRORCR/call/internal/contract"
 	"log"
 	"net/http"
 	"os"
@@ -25,10 +26,15 @@ func main() {
 
 	// 初始化rpc
 	rpcService := grpc.InitRpcClient(config)
+
+	// 初始化redis
+	client := contract.InitRedisClient(config)
+	defer client.RedisClose()
+
 	//初始化 repo
 
 	// 初始化service
-	userService := service.NewUserService(config, rpcService)
+	userService := service.NewUserService(config, rpcService, client)
 	api.NewUserController(userService)
 	appHandler := router.InitRouter()
 	server := &http.Server{

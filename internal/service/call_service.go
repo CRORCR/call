@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"github.com/CRORCR/call/internal/contract"
+	"time"
 
 	"github.com/CRORCR/call/internal/config"
 	"github.com/CRORCR/call/internal/grpc"
@@ -10,14 +12,16 @@ import (
 )
 
 type UserService struct {
-	conf *config.Configuration
-	rpc  *grpc.RpcService
+	conf  *config.Configuration
+	rpc   *grpc.RpcService
+	redis *contract.Redis
 }
 
-func NewUserService(conf *config.Configuration, rpcService *grpc.RpcService) *UserService {
+func NewUserService(conf *config.Configuration, rpcService *grpc.RpcService, redis *contract.Redis) *UserService {
 	return &UserService{
-		conf: conf,
-		rpc:  rpcService,
+		conf:  conf,
+		rpc:   rpcService,
+		redis: redis,
 	}
 }
 
@@ -31,6 +35,8 @@ func (s *UserService) CallPrice(ctx *gin.Context, uid int64) *model.CallPriceRes
 	result, err := s.rpc.GetTransferLogResult(ctx, uid)
 	fmt.Println("打印结果", result, err)
 
+	err = s.redis.Set("hello", "123", time.Minute)
+	fmt.Println("存储错了", err)
 	return resp
 }
 

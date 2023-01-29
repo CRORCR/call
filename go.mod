@@ -3,8 +3,11 @@ module github.com/CRORCR/call
 go 1.17
 
 require (
+	github.com/CRORCR/cr-common v0.0.0-20200529083253-fd1834b2d4a2
 	github.com/CRORCR/duoo-common v0.0.0-20230118013407-81f394c9b8a9
+	github.com/bsm/redislock v0.8.2
 	github.com/gin-gonic/gin v1.8.2
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/jinzhu/configor v1.2.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
@@ -14,8 +17,10 @@ require (
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/CRORCR/cr-common v0.0.0-20200529083253-fd1834b2d4a2 // indirect
 	github.com/CRORCR/ecode v0.0.0-20230114055606-333ec5690c27 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/go-redis/redis/v9 v9.0.0-rc.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jonboulle/clockwork v0.3.0 // indirect
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
