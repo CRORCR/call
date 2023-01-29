@@ -7,6 +7,7 @@ import (
 	"github.com/CRORCR/call/internal/grpc"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 type UserService struct {
@@ -33,7 +34,16 @@ func (s *UserService) CallPrice(ctx *gin.Context, uid int64) *model.CallPriceRes
 	result, err := s.rpc.GetTransferLogResult(ctx, uid)
 	fmt.Println("打印结果", result, err)
 
-	s.callDao.GetDialCallById(123)
+	//s.callDao.GetDialCallById(123)
+
+	uuid, ok := s.callDao.Lock("hello")
+	if !ok {
+		fmt.Println("req limit")
+		return resp
+	}
+	time.Sleep(time.Second * 2)
+	defer s.callDao.UnLock("hello", uuid)
+
 	return resp
 }
 

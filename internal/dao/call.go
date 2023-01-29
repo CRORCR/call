@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"github.com/CRORCR/call/internal/contract"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type CallRepository interface {
 	GetDialCallById(uid int64) ([]DialCall, error)
+	Lock(string) (string, bool)    // 加锁
+	UnLock(key string, rid string) // 解锁
 }
 
 type callDao struct {
@@ -39,6 +42,16 @@ func (c callDao) GetDialCallById(uid int64) ([]DialCall, error) {
 
 	fmt.Println("输出结果：", dial)
 	return dial, nil
+}
+
+func (c callDao) Lock(key string) (string, bool) {
+	return c.redis.Lock(key, 3*time.Second)
+}
+
+func (c callDao) UnLock(key string, rid string) {
+	if err := c.redis.ReleaseLock(key, rid); err != nil {
+		logrus.Errorf("callDao.UnLock.err:%v", err)
+	}
 }
 
 type DialCall struct {

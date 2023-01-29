@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/CRORCR/call/internal/config"
 	"github.com/CRORCR/call/internal/model"
+	"github.com/go-redis/redis"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"time"
-
-	"github.com/go-redis/redis"
 )
 
 // redis 搭建
@@ -64,7 +64,9 @@ func CreateRedisConnection(conf model.RedisConfig) *redis.Client {
 }
 
 func (r *Redis) RedisClose() {
-	_ = r.Client.Close()
+	if r.Client != nil {
+		_ = r.Client.Close()
+	}
 }
 
 // ------- 通用操作 -------
@@ -73,23 +75,40 @@ func (r *Redis) Expire(key string, t time.Duration) error {
 	return r.Client.Expire(key, t).Err()
 }
 
-// ------- 字符串操作 -------
+// ------- 字符串操作 提供三个区分零值的操作-------
 
-func (r *Redis) Set(key string, value string, expiration time.Duration) error {
+func (r *Redis) Set(key string, value interface{}, expiration time.Duration) error {
 	if err := r.Client.Set(key, value, expiration).Err(); err != nil {
 		return fmt.Errorf("redis set error:%v", err)
 	}
 	return nil
 }
 
-func (r *Redis) Get(key string) string {
+func (r *Redis) GetString(key string) string {
 	result, err := r.Client.Get(key).Result()
 	if err != nil {
-		//if err.Error() == `redis: nil` {
-		//	return ``
-		//}
-		if err == redis.Nil {
-			fmt.Println("todo 是空的么？")
+		if err == redis.Nil { // err可以直接对比redis库的nil
+			return ""
+		}
+	}
+	return result
+}
+
+func (r *Redis) GetFloat64(key string) float64 {
+	result, err := r.Client.Get(key).Float64()
+	if err != nil {
+		if err == redis.Nil { // 区分零值
+			return -1
+		}
+	}
+	return result
+}
+
+func (r *Redis) GetInt64(key string) int64 {
+	result, err := r.Client.Get(key).Int64()
+	if err != nil {
+		if err == redis.Nil { // 区分零值
+			return -1
 		}
 	}
 	return result
@@ -114,7 +133,7 @@ func (r *Redis) GetHash(key string) (map[string]string, error) {
 func (r *Redis) HGet(key, field string) string {
 	result, err := r.Client.HGet(key, field).Result()
 	if err != nil {
-		if err.Error() == `redis: nil` {
+		if err == redis.Nil {
 			return ""
 		}
 		logrus.Error(`redis hget error`, err)
@@ -122,6 +141,34 @@ func (r *Redis) HGet(key, field string) string {
 	return result
 }
 
-func (r *Redis) GetHLength(id string) int64 {
-	return r.Client.HLen(fmt.Sprintf("%v_%v", RainKey, id)).Val()
+// redis加锁
+func (r *Redis) Lock(key string, expiration time.Duration) (string, bool) {
+	value := uuid.New().String()
+	result := r.Client.SetNX(key, value, expiration).Val()
+	if result == true {
+		// 自动续锁
+		go func() {
+			t := time.NewTicker(expiration / 2)
+			defer t.Stop()
+
+			for {
+				<-t.C
+
+				if r.GetString(key) == value {
+					_ = r.Expire(key, expiration)
+				} else {
+					break
+				}
+			}
+		}()
+	}
+	return value, result
+}
+
+func (r *Redis) ReleaseLock(key string, value string) error {
+	result := r.Client.Eval(`if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end`, []string{key}, []string{value})
+	if err := result.Err(); err != nil {
+		return fmt.Errorf("redis release lock error:%v", err)
+	}
+	return nil
 }
