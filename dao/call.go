@@ -3,19 +3,19 @@ package dao
 import (
 	"fmt"
 	"github.com/CRORCR/call/internal/contract"
-	"gorm.io/gorm"
+	"github.com/sirupsen/logrus"
 )
 
 type CallRepository interface {
-	GetDialCallById(uid int64) DialCall
+	GetDialCallById(uid int64) ([]DialCall, error)
 }
 
 type callDao struct {
-	db    *gorm.DB
+	db    *contract.DataBase
 	redis *contract.Redis
 }
 
-func CreateUserRepo(db *gorm.DB, redis *contract.Redis) CallRepository {
+func CreateUserRepo(db *contract.DataBase, redis *contract.Redis) CallRepository {
 	return &callDao{
 		db:    db,
 		redis: redis,
@@ -30,13 +30,15 @@ func CreateUserRepo(db *gorm.DB, redis *contract.Redis) CallRepository {
 //	return DialCall{}
 //}
 
-func (c callDao) GetDialCallById(uid int64) DialCall {
+func (c callDao) GetDialCallById(uid int64) ([]DialCall, error) {
 	var dial []DialCall
-	err := c.db.Table("call_db.dial_call").Where("id in (?)", []int64{1, 2}).Find(&dial).Error
+	if err := c.db.Slave().Table("call_db.dial_call").Where("id in (?)", []int64{1, 2}).Find(&dial).Error; err != nil {
+		logrus.Errorf("dao.GetDialCallById.err:%v", err)
+		return dial, err
+	}
 
-	fmt.Println("有错误么？", err)
-	fmt.Println("有错误么-2？", dial)
-	return DialCall{}
+	fmt.Println("输出结果：", dial)
+	return dial, nil
 }
 
 type DialCall struct {

@@ -36,7 +36,7 @@ func main() {
 	//contract.InitDb(config)
 	//defer contract.DbClose()
 
-	// 初始化pgsql v2
+	// 初始化pgsql 应该不会有很多的数据库连接，如果多个，则都需要关闭
 	db := contract.InitPostgres(config)
 	defer contract.CloseDB(db)
 
