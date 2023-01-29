@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/CRORCR/call/dao"
 	"github.com/CRORCR/call/internal/config"
+	"github.com/CRORCR/call/internal/dao"
 	"github.com/CRORCR/call/internal/grpc"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/gin-gonic/gin"
