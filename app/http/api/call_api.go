@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"context"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/CRORCR/call/internal/service"
 	"github.com/CRORCR/duoo-common/code"
@@ -49,7 +50,7 @@ func (u *UserController) CallPrice(ctx *gin.Context) {
 	}
 
 	// 查询缓存聊天价格
-	resp := u.svc.CallPrice(ctx, uid)
+	resp := u.svc.CallPrice(ctx.Value("ctx").(context.Context), uid)
 	u.ResponseOk(ctx, resp)
 }
 

@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"context"
 	"fmt"
 	"github.com/CRORCR/call/internal/contract"
 	"github.com/sirupsen/logrus"
@@ -8,9 +9,9 @@ import (
 )
 
 type CallRepository interface {
-	GetDialCallById(uid int64) ([]DialCall, error)
-	Lock(string) (string, bool)    // 加锁
-	UnLock(key string, rid string) // 解锁
+	GetDialCallById(ctx context.Context, uid int64) ([]DialCall, error)
+	Lock(ctx context.Context, key string) (string, bool) // 加锁
+	UnLock(ctx context.Context, key string, rid string)  // 解锁
 }
 
 type callDao struct {
@@ -33,7 +34,7 @@ func CreateUserRepo(db *contract.DataBase, redis *contract.Redis) CallRepository
 //	return DialCall{}
 //}
 
-func (c callDao) GetDialCallById(uid int64) ([]DialCall, error) {
+func (c callDao) GetDialCallById(ctx context.Context, uid int64) ([]DialCall, error) {
 	var dial []DialCall
 	if err := c.db.Slave().Table("call_db.dial_call").Where("id in (?)", []int64{1, 2}).Find(&dial).Error; err != nil {
 		logrus.Errorf("dao.GetDialCallById.err:%v", err)
@@ -44,11 +45,14 @@ func (c callDao) GetDialCallById(uid int64) ([]DialCall, error) {
 	return dial, nil
 }
 
-func (c callDao) Lock(key string) (string, bool) {
+func (c callDao) Lock(ctx context.Context, key string) (string, bool) {
+	logger := logrus.WithFields(logrus.Fields{"request_id": ctx.Value("requestId"), "key": key})
+
+	logger.Infof("dao.GetDialCallById.Lock,key:%v", key)
 	return c.redis.Lock(key, 3*time.Second)
 }
 
-func (c callDao) UnLock(key string, rid string) {
+func (c callDao) UnLock(ctx context.Context, key string, rid string) {
 	if err := c.redis.ReleaseLock(key, rid); err != nil {
 		logrus.Errorf("callDao.UnLock.err:%v", err)
 	}

@@ -3,11 +3,14 @@ package middleware
 import (
 	"bytes"
 	"fmt"
+	"github.com/google/uuid"
 	"io/ioutil"
 	"math"
 	"os"
+	"strings"
 	"time"
 
+	"context"
 	"github.com/CRORCR/call/internal/model"
 	"github.com/gin-gonic/gin"
 	retalog "github.com/lestrrat-go/file-rotatelogs"
@@ -24,7 +27,6 @@ func NewLogger(logConfig model.LogConfig) {
 	)
 
 	logrus.SetOutput(writer)
-
 	// todo
 	// 如果env是本地，控制台输出日志
 	// 如果env是prod，只能输出info级别日志
@@ -57,7 +59,8 @@ func Logger() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		startTime := time.Now()
-
+		valueCtx := context.WithValue(c.Request.Context(), "requestId", strings.Replace(uuid.New().String(), "-", "", -1))
+		c.Set("ctx", valueCtx)
 		c.Next()
 
 		stopTime := time.Since(startTime)
@@ -70,6 +73,7 @@ func Logger() gin.HandlerFunc {
 
 		bodyBytes, _ := ioutil.ReadAll(c.Request.Body)
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes)) // Write body back
+
 		// 日志格式
 		logrus.WithFields(logrus.Fields{
 			"status_code": statusCode,
@@ -77,8 +81,9 @@ func Logger() gin.HandlerFunc {
 			"client_ip":   clientIP,
 			"req_method":  reqMethod,
 			"req_uri":     reqUrl,
+			"requestId":   valueCtx.Value("requestId"),
 			"request":     string(bodyBytes),
-		}).Trace()
+		}).Warn()
 	}
 }
 

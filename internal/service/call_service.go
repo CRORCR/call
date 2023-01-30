@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"github.com/CRORCR/call/internal/config"
 	"github.com/CRORCR/call/internal/dao"
@@ -25,24 +26,24 @@ func NewUserService(conf *config.Configuration, rpcService *grpc.RpcService, cal
 }
 
 // CallPrice 获取主播私聊价格
-func (s *UserService) CallPrice(ctx *gin.Context, uid int64) *model.CallPriceResp {
+func (s *UserService) CallPrice(ctx context.Context, uid int64) *model.CallPriceResp {
 	resp := &model.CallPriceResp{
 		PriceCoins: make(map[int64]int64),
 	}
 	resp.PriceCoins[uid] = 12
 
-	result, err := s.rpc.GetTransferLogResult(ctx, uid)
-	fmt.Println("打印结果", result, err)
+	//result, err := s.rpc.GetTransferLogResult(ctx, uid)
+	//fmt.Println("打印结果", result, err)
 
-	//s.callDao.GetDialCallById(123)
+	s.callDao.GetDialCallById(ctx, 123)
 
-	uuid, ok := s.callDao.Lock("hello")
+	uuid, ok := s.callDao.Lock(ctx, "hello")
 	if !ok {
 		fmt.Println("req limit")
 		return resp
 	}
 	time.Sleep(time.Second * 2)
-	defer s.callDao.UnLock("hello", uuid)
+	defer s.callDao.UnLock(ctx, "hello", uuid)
 
 	return resp
 }

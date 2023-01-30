@@ -10,7 +10,6 @@ import (
 )
 
 func initRouter() *gin.Engine {
-	// 默认带有Logger 和 Recovery 两个中间件
 	//gin.SetMode(gin.ReleaseMode) // 输出调试信息
 	gin.SetMode(gin.DebugMode) // 输出调试信息
 
